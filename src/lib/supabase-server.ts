@@ -4,4 +4,8 @@ import type { Database } from './types'
 
 export const createServerSupabase = () => {
   return createServerComponentClient<Database>({ cookies })
+}
+
+export const getServerSupabase = () => {
+  return createServerComponentClient<Database>({ cookies })
 } 

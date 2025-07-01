@@ -19,10 +19,22 @@ export default async function Home() {
   return (
     <div className="pb-20 max-w-lg mx-auto bg-white min-h-screen">
       <DashboardHeader userName={user.patients?.full_name?.split(' ')[0] || 'User'} />
-      <PromotionalBanner />
+      <PromotionalBanner 
+        title="Health Checkup Special" 
+        discount="20%" 
+      />
       <ServicesGrid />
       {nextAppointment && (
-        <NextAppointment appointment={nextAppointment} />
+        <NextAppointment 
+          doctor={{
+            name: `Dr. ${nextAppointment.doctor.full_name}`,
+            specialty: nextAppointment.doctor.specialization,
+            imageUrl: nextAppointment.doctor.avatar_url
+          }}
+          time={nextAppointment.start_time}
+          date={nextAppointment.date}
+          status={nextAppointment.status}
+        />
       )}
       <BottomNavigation />
     </div>

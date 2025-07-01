@@ -8,30 +8,48 @@ export interface User {
   updated_at: string;
 }
 
+export interface Doctor {
+  id: string;
+  user_id: string;
+  full_name: string;
+  specialization: string;
+  qualification?: string;
+  years_of_experience?: number;
+  available_days?: string[];
+  available_hours?: string[];
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+  appointments_count?: number;
+  rating?: number;
+}
+
 export interface Patient {
   id: string;
   user_id: string;
   full_name: string;
-  phone_number: string;
+  phone_number?: string;
   date_of_birth: string;
   medical_history?: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface Doctor {
+export interface Appointment {
   id: string;
-  full_name: string;
-  specialization: string;
-  qualification: string;
-  years_of_experience: number;
-  available_days: string[];
-  available_hours: string[];
-  image_url?: string;
+  patient_id: string;
+  doctor_id: string;
+  appointment_type_id?: string;
+  service_id?: string;
+  date: string;
+  start_time: string;
+  time?: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  notes?: string;
   created_at: string;
   updated_at: string;
-  appointments_count?: number;
-  rating?: number;
+  doctor?: Doctor;
+  appointment_type?: AppointmentType;
 }
 
 export interface AppointmentType {
@@ -41,21 +59,6 @@ export interface AppointmentType {
   description: string;
   created_at: string;
   updated_at: string;
-}
-
-export interface Appointment {
-  id: string;
-  patient_id: string;
-  doctor_id: string;
-  appointment_type_id: string;
-  date: string;
-  start_time: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  doctor?: Doctor;
-  appointment_type?: AppointmentType;
 }
 
 export interface Message {
@@ -89,9 +92,6 @@ export interface TimeSlot {
   is_available: boolean;
 }
 
-export type Appointment = Database['public']['Tables']['appointments']['Row'];
-export type Doctor = Database['public']['Tables']['doctors']['Row'];
-export type Patient = Database['public']['Tables']['patients']['Row'];
 export type Service = Database['public']['Tables']['services']['Row'];
 
 export type AppointmentWithRelations = Appointment & {

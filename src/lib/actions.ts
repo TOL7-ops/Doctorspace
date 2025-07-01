@@ -1,4 +1,4 @@
-import { getServerSupabase } from './supabase';
+import { getServerSupabase } from './supabase-server';
 import { Doctor, AppointmentType, TimeSlot, Appointment, AppointmentWithRelations } from '@/types';
 
 export async function getDoctors(): Promise<Doctor[]> {
