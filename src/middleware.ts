@@ -1,4 +1,4 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -6,8 +6,25 @@ import type { NextRequest } from 'next/server'
 const publicRoutes = ['/login', '/signup', '/forgot-password', '/reset-password']
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
+  let response = NextResponse.next()
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            req.cookies.set(name, value)
+            response.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
 
   try {
     // Refresh session if expired
@@ -24,7 +41,7 @@ export async function middleware(req: NextRequest) {
       if (session && isPublicRoute) {
         return NextResponse.redirect(new URL('/dashboard', req.url))
       }
-      return res
+      return response
     }
 
     // Protected routes - redirect to login if not authenticated
@@ -35,11 +52,11 @@ export async function middleware(req: NextRequest) {
     }
 
     // User is authenticated, allow access to protected routes
-    return res
+    return response
   } catch (e) {
     console.error('Middleware error:', e)
     // On error, allow the request to continue
-    return res
+    return response
   }
 }
 
