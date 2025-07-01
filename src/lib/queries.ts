@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from './supabase';
+import { supabase } from './supabase-client';
 import type { User, Doctor, Appointment, Message } from '@/types';
 
 export async function getCurrentUser() {

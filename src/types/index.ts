@@ -89,9 +89,6 @@ export interface TimeSlot {
   is_available: boolean;
 }
 
-export type Appointment = Database['public']['Tables']['appointments']['Row'];
-export type Doctor = Database['public']['Tables']['doctors']['Row'];
-export type Patient = Database['public']['Tables']['patients']['Row'];
 export type Service = Database['public']['Tables']['services']['Row'];
 
 export type AppointmentWithRelations = Appointment & {

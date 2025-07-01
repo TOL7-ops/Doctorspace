@@ -16,13 +16,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createServerSupabase();
-  const { data: { session } } = await supabase.auth.getSession();
-
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SupabaseProvider session={session}>
+        <SupabaseProvider>
           {children}
           <Toaster />
         </SupabaseProvider>

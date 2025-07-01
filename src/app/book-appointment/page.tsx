@@ -1,6 +1,6 @@
 import { BookingForm } from '@/components/BookingForm';
 import { getDoctors, getAppointmentTypes } from '@/lib/actions';
-import { getServerSupabase } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase-server';
 
 export default async function BookAppointment() {
   const doctors = await getDoctors();
@@ -42,7 +42,6 @@ export default async function BookAppointment() {
           <BookingForm
             doctors={doctors}
             appointmentTypes={appointmentTypes}
-            availableSlots={[]} // This will be fetched dynamically based on selected doctor and date
             onSubmit={createAppointment}
           />
         </div>
