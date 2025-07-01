@@ -127,6 +127,8 @@ export interface Database {
         Row: {
           id: string
           full_name: string
+          email: string
+          role: string
           avatar_url: string | null
           phone: string | null
           address: string | null
@@ -136,6 +138,8 @@ export interface Database {
         Insert: {
           id: string
           full_name: string
+          email: string
+          role?: string
           avatar_url?: string | null
           phone?: string | null
           address?: string | null
@@ -145,6 +149,8 @@ export interface Database {
         Update: {
           id?: string
           full_name?: string
+          email?: string
+          role?: string
           avatar_url?: string | null
           phone?: string | null
           address?: string | null

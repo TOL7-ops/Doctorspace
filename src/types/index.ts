@@ -8,31 +8,7 @@ export interface User {
   updated_at: string;
 }
 
-export interface Patient {
-  id: string;
-  user_id: string;
-  full_name: string;
-  phone_number: string;
-  date_of_birth: string;
-  medical_history?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Doctor {
-  id: string;
-  full_name: string;
-  specialization: string;
-  qualification: string;
-  years_of_experience: number;
-  available_days: string[];
-  available_hours: string[];
-  image_url?: string;
-  created_at: string;
-  updated_at: string;
-  appointments_count?: number;
-  rating?: number;
-}
+// Patient and Doctor interfaces removed to avoid conflicts with Database types
 
 export interface AppointmentType {
   id: string;
@@ -43,20 +19,7 @@ export interface AppointmentType {
   updated_at: string;
 }
 
-export interface Appointment {
-  id: string;
-  patient_id: string;
-  doctor_id: string;
-  appointment_type_id: string;
-  date: string;
-  start_time: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  doctor?: Doctor;
-  appointment_type?: AppointmentType;
-}
+// Appointment interface removed to avoid conflicts with Database types
 
 export interface Message {
   id: string;
@@ -103,4 +66,17 @@ export type AppointmentWithRelations = Appointment & {
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type UserProfile = Profile & {
   email: string;
-}; 
+};
+
+export interface UserProfileData {
+  id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  phone?: string;
+  phone_number?: string;
+  avatar_url?: string;
+  address?: string;
+  date_of_birth?: string;
+  medical_history?: string;
+} 

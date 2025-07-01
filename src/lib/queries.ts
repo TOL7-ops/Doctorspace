@@ -146,4 +146,68 @@ export async function markMessageAsRead(messageId: string) {
   if (error) {
     throw new Error(`Failed to mark message as read: ${error.message}`);
   }
+}
+
+export async function getUserProfile(userId: string) {
+  try {
+    // First try to get from profiles table (if it exists)
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (!profileError && profileData) {
+      console.log('Profile found in profiles table:', profileData);
+      // Get user email from auth
+      const { data: { user } } = await supabase.auth.getUser();
+      return {
+        id: profileData.id,
+        full_name: profileData.full_name,
+        email: user?.email || 'N/A',
+        role: 'patient', // Default role since profiles table doesn't have role
+        phone: profileData.phone,
+        avatar_url: profileData.avatar_url,
+        address: profileData.address
+      };
+    }
+
+    console.log('Profile not found in profiles table, trying patients table...');
+    
+    // Fallback to patients table (current structure)
+    const { data: patientData, error: patientError } = await supabase
+      .from('patients')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (patientError) {
+      console.error('Error fetching from patients table:', patientError);
+      return null;
+    }
+
+    if (!patientData) {
+      console.error('No profile found for user:', userId);
+      return null;
+    }
+
+    console.log('Profile found in patients table:', patientData);
+    
+    // Get user email from auth
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    return {
+      id: patientData.id,
+      full_name: patientData.full_name,
+      email: user?.email || 'N/A',
+      role: 'patient', // Default role for patients
+      phone_number: patientData.phone_number,
+      date_of_birth: patientData.date_of_birth,
+      medical_history: patientData.medical_history
+    };
+
+  } catch (error) {
+    console.error('Unexpected error fetching user profile:', error);
+    return null;
+  }
 } 

@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { getUserProfile } from '@/lib/queries';
 import type { User } from '@supabase/supabase-js';
+import type { UserProfileData } from '@/types';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -19,8 +23,21 @@ export default function DashboardPage() {
           return;
         }
         setUser(user);
+
+        // Fetch user profile data
+        console.log('Fetching profile for user:', user.id);
+        const profileData = await getUserProfile(user.id);
+        
+        if (profileData) {
+          setProfile(profileData);
+          console.log('Profile data loaded:', profileData);
+        } else {
+          setProfileError('Profile not found. Please complete your profile setup.');
+          console.warn('No profile found for user:', user.id);
+        }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error('Error fetching user or profile:', error);
+        setProfileError('Error loading profile data');
         router.replace('/login');
       } finally {
         setLoading(false);
@@ -64,14 +81,63 @@ export default function DashboardPage() {
               Sign Out
             </button>
           </div>
+          
           <div className="bg-white shadow overflow-hidden sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Welcome, {user.email}
-              </h3>
-              <div className="mt-2 max-w-xl text-sm text-gray-500">
-                <p>You are successfully signed in to your account.</p>
-              </div>
+              {profile ? (
+                <div>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    Welcome, {profile.full_name}!
+                  </h3>
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Full Name</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{profile.full_name}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Email</dt>
+                      <dd className="mt-1 text-sm text-gray-900">{profile.email}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Role</dt>
+                      <dd className="mt-1 text-sm text-gray-900 capitalize">{profile.role}</dd>
+                    </div>
+                    {profile.phone && (
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Phone</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{profile.phone}</dd>
+                      </div>
+                    )}
+                    {profile.phone_number && (
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Phone Number</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{profile.phone_number}</dd>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : profileError ? (
+                <div>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    Welcome, {user.email}!
+                  </h3>
+                  <div className="mt-2 max-w-xl text-sm text-red-600">
+                    <p>{profileError}</p>
+                  </div>
+                  <div className="mt-2 max-w-xl text-sm text-gray-500">
+                    <p>Your account is authenticated, but profile information could not be loaded.</p>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    Welcome, {user.email}!
+                  </h3>
+                  <div className="mt-2 max-w-xl text-sm text-gray-500">
+                    <p>You are successfully signed in to your account.</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
